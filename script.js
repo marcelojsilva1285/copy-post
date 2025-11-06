@@ -1,39 +1,50 @@
-const copy = document.querySelector('.bx-copy');
-const poste = document.querySelector('.poste');
-const copyInput = document.querySelector('.copy input');
+const btnToCopy = document.querySelector('.bx-copy');
+const btnToPoste = document.querySelector('.poste i');
+
+const inputToCopyText = document.querySelector('.copy input');
+const InputToPosteText = document.querySelector('.poste input');
 
 let iconResteTimer;
 
-copy.addEventListener('click', async () => {
-  if (!copyInput.value) {
-    console.warn('Não há texto para copiar.');
+function toggleIconCopyCheck() {
+  if (btnToCopy.classList.contains('bx-copy')) {
+    btnToCopy.classList.remove('bx-copy');
+    btnToCopy.classList.add('bx-check');
+  } else if (btnToCopy.classList.contains('bx-check')) {
+    btnToCopy.classList.add('bx-copy');
+    btnToCopy.classList.remove('bx-check');
+  }
+}
 
+btnToCopy.addEventListener('click', async () => {
+  if (!inputToCopyText.value) {
+    console.warn('Não há texto para copiar.');
     return;
   }
 
   clearTimeout(iconResteTimer);
 
   // Muda o ícone para "check"
-  IconCopyCheck();
+  toggleIconCopyCheck();
 
   try {
     // Tenta copiar o texto
-    await navigator.clipboard.writeText(copyInput.value);
+    await navigator.clipboard.writeText(inputToCopyText.value);
     // Usa 'setTimeout' para reverter o ícone APENAS UMA VEZ após 2s
-    setTimeout(() => inconCopyPoste(), 2000);
+    setTimeout(() => toggleIconCopyCheck(), 2000);
   } catch (error) {
     console.error(' Falha ao copiar', error);
     // Se falhar, reverta o ícone imediatamente
-    inconCopyPoste()
+    toggleIconCopyCheck();
   }
 });
 
-function IconCopyCheck() {
-  copy.classList.remove('bx-copy');
-  copy.classList.add('bx-check');
-}
-
-function inconCopyPoste() {
-  copy.classList.add('bx-copy');
-  copy.classList.remove('bx-check');
-}
+btnToPoste.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.readText().then((textoColado) => {
+      InputToPosteText.value = textoColado;
+    });
+  } catch (error) {
+    console.error('Erro ao colar texto', error);
+  }
+});
